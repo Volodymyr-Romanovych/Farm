@@ -6,7 +6,7 @@
 // @author       Volodymyr_Romanovych
 // @match        https://farmy.live/*
 // @grant        none
-// @icon         https://github.com/Vladimir199246/Farm/blob/main/icon.jpg
+// @icon         https://raw.githubusercontent.com/Vladimir199246/Farm/refs/heads/main/icon.jpg
 // @downloadURL  https://github.com/Vladimir199246/Farm/raw/refs/heads/main/user.js
 // @updateURL    https://github.com/Vladimir199246/Farm/raw/refs/heads/main/user.js
 // @run-at       document-idle
