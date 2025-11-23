@@ -1,17 +1,16 @@
 // ==UserScript==
 // @name         Farm Land Auto Quest & Ads Claim (100 Max)
 // @namespace    http://tampermonkey.net/
-// @version      1.9
+// @version      1.8
 // @description  Автоматично відкриває завдання з обмеженням 100 реклам
 // @author       Volodymyr_Romanovych
 // @match        https://farmy.live/*
 // @grant        none
-// @icon         blob:https://web.telegram.org/6fc87870-d9e2-436c-94e3-ce8cde49daf2
-// @downloadURL  https://github.com/Vladimir199246/Farm-Land-/blob/main/Auto-Quest.js
-// @updateURL    https://github.com/Vladimir199246/Farm-Land-/blob/main/Auto-Quest.js
+// @icon         https://farmy.live/favicon.ico
+// @downloadURL  https://raw.githubusercontent.com/Vladimir199246/Farm-Land/main/user.js
+// @updateURL    https://raw.githubusercontent.com/Vladimir199246/Farm-Land/main/user.js
 // @run-at       document-idle
 // ==/UserScript==
-
 (function() {
     'use strict';
 
