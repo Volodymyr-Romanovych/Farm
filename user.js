@@ -43,7 +43,7 @@
     // Функція для безпечного пошуку тексту
     function matchesPattern(text, patterns) {
         const cleanText = (text || '').toString().trim().toLowerCase();
-        return patterns.some(pattern => 
+        return patterns.some(pattern =>
             cleanText.includes(pattern.toLowerCase())
         );
     }
@@ -56,11 +56,11 @@
     // Функція для безпечного кліку
     function safeClick(element) {
         try {
-            if (element && element instanceof HTMLElement && 
-                !element.disabled && 
+            if (element && element instanceof HTMLElement &&
+                !element.disabled &&
                 element.style.display !== 'none' &&
                 element.offsetParent !== null) {
-                
+
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 element.click();
                 return true;
@@ -82,7 +82,7 @@
         const errorElements = document.querySelectorAll('.error, .warning, .alert, .ban-message, [class*="error"], [class*="warning"]');
         for (let element of errorElements) {
             const text = element.textContent || '';
-            if (text.includes('бан') || text.includes('ban') || 
+            if (text.includes('бан') || text.includes('ban') ||
                 text.includes('підозріла') || text.includes('suspicious') ||
                 text.includes('блок') || text.includes('block')) {
                 console.error('⚡ ВИЯВЛЕНО ПРОБЛЕМУ: ', text);
@@ -107,7 +107,7 @@
         if (!isRunning || isWatchingAd) return false;
         if (totalAdWatches >= MAX_TOTAL_ADS) return false;
         if (lastAdTime === 0) return true;
-        
+
         const timeSinceLastAd = Date.now() - lastAdTime;
         return timeSinceLastAd >= currentDelay;
     }
@@ -125,10 +125,10 @@
 
     function showNotification(message, type = 'info') {
         const notification = document.createElement('div');
-        const bgColor = type === 'error' ? 'linear-gradient(45deg, #ff0000, #ff6b6b)' : 
+        const bgColor = type === 'error' ? 'linear-gradient(45deg, #ff0000, #ff6b6b)' :
                          type === 'success' ? 'linear-gradient(45deg, #00c853, #64dd17)' :
                          'linear-gradient(45deg, #2196F3, #21CBF3)';
-        
+
         notification.style.cssText = `
             position: fixed;
             top: 20px;
@@ -209,7 +209,7 @@
 
         // Покращений пошук кнопки завдань
         let questButton = findQuestButton();
-        
+
         if (questButton) {
             console.log('Знайдено кнопку завдань, клікаємо...');
             if (safeClick(questButton)) {
@@ -270,7 +270,7 @@
 
         // Пошук вкладок
         const tabsContainer = document.querySelector('#quests-tabs-container, .quests-tabs, .tabs-container');
-        const tabs = tabsContainer ? 
+        const tabs = tabsContainer ?
             tabsContainer.querySelectorAll('.tab, .quest-tab, button, div[data-tab]') :
             document.querySelectorAll('.tab, .quest-tab, [data-tab]');
 
@@ -278,10 +278,10 @@
 
         for (let tab of tabs) {
             if (!isRunning) break;
-            
-            if (matchesPattern(tab.textContent, TEXT_PATTERNS.daily) || 
+
+            if (matchesPattern(tab.textContent, TEXT_PATTERNS.daily) ||
                 tab.textContent.match(/[0-9]+\s*\/\s*[0-9]+/)) {
-                
+
                 console.log('Знайдено вкладку:', tab.textContent);
                 if (safeClick(tab)) {
                     foundTab = true;
@@ -315,8 +315,8 @@
             const text = (button.textContent || button.innerText).trim();
 
             // Спочатку шукаємо кнопки реклами
-            if (matchesPattern(text, TEXT_PATTERNS.watchAd) && 
-                !button.disabled && 
+            if (matchesPattern(text, TEXT_PATTERNS.watchAd) &&
+                !button.disabled &&
                 getComputedStyle(button).display !== 'none') {
 
                 console.log('Знайдено кнопку перегляду реклами:', text);
@@ -335,7 +335,7 @@
 
                 foundAdButtons = true;
                 console.log('Клікаємо на перегляд реклами...');
-                
+
                 if (safeClick(button)) {
                     isWatchingAd = true;
                     adWatchCount++;
@@ -349,7 +349,7 @@
                     console.log(`Переглядаємо рекламу (${totalAdWatches}/${MAX_TOTAL_ADS}), наступна затримка: ${Math.round(nextDelay/1000)}с`);
 
                     // Очікування завершення реклами
-                    await wait(32000); // 32 секунди
+                    await wait(38000); // 38 секунди
 
                     isWatchingAd = false;
                     currentDelay = nextDelay;
@@ -358,7 +358,7 @@
 
                     console.log(`Реклама завершена, чекаємо ${Math.round(nextDelay/1000)}с`);
                     await wait(nextDelay);
-                    
+
                     // Продовжуємо пошук після реклами
                     return clickClaimButtons();
                 } else {
@@ -376,8 +376,8 @@
                 if (!isRunning) break;
 
                 const text = (button.textContent || button.innerText).trim();
-                if (matchesPattern(text, TEXT_PATTERNS.claim) && 
-                    !button.disabled && 
+                if (matchesPattern(text, TEXT_PATTERNS.claim) &&
+                    !button.disabled &&
                     getComputedStyle(button).display !== 'none') {
 
                     console.log('Знайдено кнопку забирання:', text);
@@ -422,8 +422,8 @@
             if (checkMaxAdsReached()) return;
 
             const text = (button.textContent || button.innerText).trim();
-            if (matchesPattern(text, TEXT_PATTERNS.watchAd) && 
-                !button.disabled && 
+            if (matchesPattern(text, TEXT_PATTERNS.watchAd) &&
+                !button.disabled &&
                 getComputedStyle(button).display !== 'none') {
 
                 console.log('Знайдено кнопку реклами на головному екрані:', text);
@@ -441,7 +441,7 @@
 
                 foundAd = true;
                 console.log('Клікаємо на рекламу на головному екрані...');
-                
+
                 if (safeClick(button)) {
                     isWatchingAd = true;
                     adWatchCount++;
@@ -463,7 +463,7 @@
 
                     console.log(`Реклама завершена, чекаємо ${Math.round(nextDelay/1000)}с`);
                     await wait(nextDelay);
-                    
+
                     return checkForAdsOnMainScreen();
                 } else {
                     errorCount++;
@@ -483,9 +483,9 @@
 
             const cycleDelay = getRandomDelay();
             console.log(`Чекаємо ${Math.round(cycleDelay/1000)}с перед новим циклом...`);
-            
+
             await wait(cycleDelay);
-            
+
             if (isRunning && totalAdWatches < MAX_TOTAL_ADS) {
                 console.log('Запускаємо новий цикл...');
                 await openAndClaimQuests();
@@ -566,7 +566,7 @@
         if (gameElements.length > 0) {
             console.log('Гра завантажена, запускаємо автоматизацію...');
             loadProgress();
-            
+
             setTimeout(() => {
                 if (isRunning && totalAdWatches < MAX_TOTAL_ADS) {
                     openAndClaimQuests();
@@ -614,7 +614,7 @@
         errorCount = 0;
         lastAdTime = 0;
         currentDelay = getRandomDelay();
-        
+
         console.log(`Запуск автоматизації з затримкою ${Math.round(currentDelay/1000)}с...`);
         showNotification('Автоматизацію запущено!', 'success');
         openAndClaimQuests();
@@ -636,7 +636,7 @@
         lastAdTime = 0;
         currentDelay = getRandomDelay();
         isRunning = true;
-        
+
         console.log('Лічильники скинуті');
         showNotification('Лічильники скинуті!', 'success');
         updateStatsDisplay();
@@ -652,7 +652,7 @@
             const progressBar = document.getElementById('auto-progress-bar');
             if (progressBar) {
                 progressBar.style.width = `${progress}%`;
-                progressBar.style.background = progress >= 100 ? '#ff4444' : 
+                progressBar.style.background = progress >= 100 ? '#ff4444' :
                                               progress >= 80 ? '#ff9800' : '#4CAF50';
             }
         }
@@ -777,11 +777,11 @@
             font-weight: bold;
             transition: all 0.3s ease;
         `;
-        
+
         button.onmouseover = () => button.style.opacity = '0.8';
         button.onmouseout = () => button.style.opacity = '1';
         button.onclick = onClick;
-        
+
         return button;
     }
 
