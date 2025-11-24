@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Farm Land Auto Quest & Ads Claim (100 Max) - Enhanced
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Покращена версія з виправленнями помилок та додатковими функціями
 // @author       Volodymyr_Romanovych
 // @match        https://farmy.live/*
@@ -349,7 +349,7 @@
                     console.log(`Переглядаємо рекламу (${totalAdWatches}/${MAX_TOTAL_ADS}), наступна затримка: ${Math.round(nextDelay/1000)}с`);
 
                     // Очікування завершення реклами
-                    await wait(38000); // 38 секунди
+                    await wait(40000); // 40 секунди
 
                     isWatchingAd = false;
                     currentDelay = nextDelay;
