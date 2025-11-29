@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Farm Land Auto Quest & Ads Claim (100 Max) - Enhanced
 // @namespace    http://tampermonkey.net/
-// @version      1.32
-// @description  Покращена версія з виправленнями помилок та додатковими функціями
+// @version      1.34
+// @description  Покращена версія з виправленнями помилок
 // @author       Volodymyr_Romanovych
 // @match        https://farmy.live/*
 // @grant        none
@@ -31,6 +31,11 @@
     let errorCount = 0;
     const MAX_ERRORS = 5;
 
+    // Змінні для перетягування
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
     // Розширений словник для пошуку елементів
     const TEXT_PATTERNS = {
         quests: ['Задания', 'Завдання', 'Quests', 'Квести', 'Задачи'],
@@ -39,6 +44,112 @@
         daily: ['Ежедневные', 'Щоденні', 'Daily', 'Основные', 'Основні', 'Щоденні завдання'],
         close: ['Закрыть', 'Закрити', 'Close', '×', 'X']
     };
+
+    // Функції для перетягування
+    function startDrag(e) {
+        const container = document.getElementById('auto-control-panel');
+        if (!container) return;
+
+        isDragging = true;
+        const rect = container.getBoundingClientRect();
+
+        if (e.type === 'mousedown') {
+            dragOffsetX = e.clientX - rect.left;
+            dragOffsetY = e.clientY - rect.top;
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+        } else if (e.type === 'touchstart') {
+            const touch = e.touches[0];
+            dragOffsetX = touch.clientX - rect.left;
+            dragOffsetY = touch.clientY - rect.top;
+            document.addEventListener('touchmove', onDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+
+        container.style.transition = 'none';
+        container.style.cursor = 'grabbing';
+        e.preventDefault();
+    }
+
+    function onDrag(e) {
+        if (!isDragging) return;
+
+        const container = document.getElementById('auto-control-panel');
+        if (!container) return;
+
+        let clientX, clientY;
+
+        if (e.type === 'mousemove') {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        } else if (e.type === 'touchmove') {
+            const touch = e.touches[0];
+            clientX = touch.clientX;
+            clientY = touch.clientY;
+        }
+
+        // Обмеження руху в межах вікна
+        const maxX = window.innerWidth - container.offsetWidth;
+        const maxY = window.innerHeight - container.offsetHeight;
+
+        let newX = clientX - dragOffsetX;
+        let newY = clientY - dragOffsetY;
+
+        // Застосування обмежень
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+
+        container.style.left = newX + 'px';
+        container.style.top = newY + 'px';
+        container.style.right = 'auto';
+
+        e.preventDefault();
+    }
+
+    function stopDrag() {
+        isDragging = false;
+        const container = document.getElementById('auto-control-panel');
+        if (container) {
+            container.style.transition = 'all 0.3s ease';
+            container.style.cursor = 'grab';
+            // Зберігаємо позицію
+            savePanelPosition();
+        }
+
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('mouseup', stopDrag);
+        document.removeEventListener('touchmove', onDrag);
+        document.removeEventListener('touchend', stopDrag);
+    }
+
+    function savePanelPosition() {
+        const container = document.getElementById('auto-control-panel');
+        if (!container) return;
+
+        const position = {
+            x: parseInt(container.style.left),
+            y: parseInt(container.style.top)
+        };
+
+        localStorage.setItem('farmLandPanelPosition', JSON.stringify(position));
+    }
+
+    function loadPanelPosition() {
+        try {
+            const saved = localStorage.getItem('farmLandPanelPosition');
+            if (saved) {
+                const position = JSON.parse(saved);
+                const container = document.getElementById('auto-control-panel');
+                if (container && position.x !== undefined && position.y !== undefined) {
+                    container.style.left = position.x + 'px';
+                    container.style.top = position.y + 'px';
+                    container.style.right = 'auto';
+                }
+            }
+        } catch (error) {
+            console.error('Помилка відновлення позиції панелі:', error);
+        }
+    }
 
     // Функція для безпечного пошуку тексту
     function matchesPattern(text, patterns) {
@@ -671,17 +782,25 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.50);
             padding: 12px;
             border-radius: 12px;
             border: 2px solid #4CAF50;
             min-width: 220px;
             backdrop-filter: blur(10px);
             font-family: Arial, sans-serif;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            user-select: none;
         `;
 
+        // Додаємо обробники перетягування
+        container.addEventListener('mousedown', startDrag);
+        container.addEventListener('touchstart', startDrag);
+
         const title = document.createElement('div');
-        title.innerHTML = '🎲 Farm Land Auto (100 Max) v1.32';
+        title.innerHTML = '🎲 Farm Land Auto (100 Max) v1.33';
         title.style.cssText = `
             color: white;
             font-weight: bold;
@@ -690,6 +809,7 @@
             font-size: 14px;
             border-bottom: 1px solid #4CAF50;
             padding-bottom: 5px;
+            cursor: grab;
         `;
 
         // Прогрес бар
@@ -697,7 +817,7 @@
         progressContainer.style.cssText = `
             width: 100%;
             height: 10px;
-            background: #333;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 5px;
             margin-bottom: 8px;
             overflow: hidden;
@@ -723,6 +843,7 @@
             text-align: center;
             margin-bottom: 8px;
             font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         `;
         stats.innerHTML = `Реклам: 0/${MAX_TOTAL_ADS} (0%)`;
 
@@ -748,8 +869,9 @@
             font-size: 10px;
             text-align: center;
             margin-top: 3px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         `;
-        infoText.innerHTML = '🎲 Затримка 13-20 секунд | 🛡️ Захищений режим';
+        infoText.innerHTML = '🎲 Затримка 13-20с | 🛡️ Захищений | 👆 Перетягни';
 
         container.appendChild(title);
         container.appendChild(progressContainer);
@@ -758,8 +880,11 @@
         container.appendChild(infoText);
         document.body.appendChild(container);
 
+        // Завантажуємо збережену позицію
+        setTimeout(loadPanelPosition, 100);
+
         updateStatsDisplay();
-        console.log('Додано покращену панель керування');
+        console.log('Додано покращену панель керування з перетягуванням');
     }
 
     function createButton(text, color, onClick) {
@@ -776,10 +901,11 @@
             flex: 1;
             font-weight: bold;
             transition: all 0.3s ease;
+            opacity: 0.9;
         `;
 
-        button.onmouseover = () => button.style.opacity = '0.8';
-        button.onmouseout = () => button.style.opacity = '1';
+        button.onmouseover = () => button.style.opacity = '1';
+        button.onmouseout = () => button.style.opacity = '0.9';
         button.onclick = onClick;
 
         return button;
@@ -807,8 +933,8 @@
     window.stopAutoClaim = stopAutoClaim;
     window.resetAutoCounters = resetCounters;
 
-    console.log('Farm Land Auto Quest & Ads Claim (100 Max) - Enhanced v1.32 активовано!');
-    console.log('🛡️ Захищений режим | 🎲 Випадкові затримки | 💾 Автозбереження');
+    console.log('Farm Land Auto Quest & Ads Claim (100 Max) - Enhanced v1.33 активовано!');
+    console.log('🛡️ Захищений режим | 🎲 Випадкові затримки | 💾 Автозбереження | 👆 Перетягування');
 
     init();
 
