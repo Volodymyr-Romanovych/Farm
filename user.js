@@ -800,7 +800,7 @@
         container.addEventListener('touchstart', startDrag);
 
         const title = document.createElement('div');
-        title.innerHTML = '🎲 Farm Land Auto (100 Max) v1.33';
+        title.innerHTML = '🎲 Farm Land Auto v1.34';
         title.style.cssText = `
             color: white;
             font-weight: bold;
